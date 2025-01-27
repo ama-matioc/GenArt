@@ -52,6 +52,12 @@ const ImageGenerator = () => {
                 const imageUrl = URL.createObjectURL(blob);
     
                 setGeneratedImage(imageUrl);
+
+                // Save the image to the database
+                await axios.post('http://localhost:3001/api/save-image', {
+                imageUrl,
+                prompt: payload.prompt,
+                });
             } else {
                 console.error("Error generating image:", response.status, response.data.toString());
             }
