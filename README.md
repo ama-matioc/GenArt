@@ -1,0 +1,2 @@
+# GenArt
+Bachelor thesis application
