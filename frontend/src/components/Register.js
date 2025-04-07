@@ -9,6 +9,7 @@ const Register = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setconfirmPassword] = useState('')
+    const [username, setUsername] = useState('')
     const [isRegistering, setIsRegistering] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
@@ -18,7 +19,7 @@ const Register = () => {
         e.preventDefault()
         if(!isRegistering) {
             setIsRegistering(true)
-            await doCreateUserWithEmailAndPassword(email, password)
+            await doCreateUserWithEmailAndPassword(email, password, username)
         }
     }
 
@@ -37,6 +38,15 @@ const Register = () => {
                 <div className="auth-box">
                     <h3 className="title">Create a new account</h3>
                     <form onSubmit={onSubmit}>
+                        <div className="input-group">
+                            <label className="input-label">Username</label>  {/* ✅ Add username input */}
+                            <input
+                                type="text"
+                                required
+                                value={username} onChange={(e) => setUsername(e.target.value)}
+                                className="input-field"
+                            />
+                        </div>
                         <div className="input-group">
                             <label className="input-label">Email</label>
                             <input

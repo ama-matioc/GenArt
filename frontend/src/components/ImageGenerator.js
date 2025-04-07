@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Navbar from './Navbar';
 import '../App.css';
 import axios from 'axios';
+import { uploadImageToFirebase } from '../firebase/FirebaseStorage';
 
 const ImageGenerator = () => {
 
@@ -13,8 +14,10 @@ const ImageGenerator = () => {
         format: 'png'
     });
 
-    const [generatedImage, setGeneratedImage] = useState(null); // State to hold the generated image
-    const [loading, setLoading] = useState(false); // State to manage loading state
+    const [generatedImage, setGeneratedImage] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [imageBlob, setImageBlob] = useState(null);
+    const [uploading, setUploading] = useState(false);
 
     const API_URL = process.env.REACT_APP_API_URL;
     const API_KEY = process.env.REACT_APP_API_KEY;
@@ -33,13 +36,12 @@ const ImageGenerator = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-    
+
         try {
             const formData = new FormData();
             formData.append("prompt", payload.prompt);
             formData.append("output_format", payload.format);
-    
-            // Step 1: Generate the image
+
             const response = await axios.post(API_URL, formData, {
                 responseType: "arraybuffer",
                 headers: {
@@ -47,27 +49,12 @@ const ImageGenerator = () => {
                     Accept: "image/*",
                 },
             });
-    
+
             if (response.status === 200) {
-                // Step 2: Create a new FormData for saving the image
-                const saveImageFormData = new FormData();
-    
-                // Append the generated image and prompt to the FormData
-                saveImageFormData.append("image", new Blob([response.data], { type: "image/*" })); // Add the image as a file
-                saveImageFormData.append("prompt", payload.prompt);
-    
-                // Step 3: Save the image to the database
-                await axios.post('http://localhost:3001/api/save-image', saveImageFormData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
-    
-                // Step 4: Set the image URL for display
-                const imageUrl = URL.createObjectURL(new Blob([response.data], { type: "image/*" }));
+                const blob = new Blob([response.data], { type: "image/png" });
+                const imageUrl = URL.createObjectURL(blob);
                 setGeneratedImage(imageUrl);
-            } else {
-                console.error("Error generating image:", response.status, response.data.toString());
+                setImageBlob(blob);
             }
         } catch (error) {
             console.error("Error generating image:", error);
@@ -77,6 +64,19 @@ const ImageGenerator = () => {
     };
     
     
+    const handlePost = async () => {
+        if (!imageBlob) return;
+        setUploading(true);
+
+        try {
+            await uploadImageToFirebase(imageBlob, payload.prompt);
+            alert("Image posted successfully!");
+        } catch (error) {
+            alert("Failed to post image.");
+        } finally {
+            setUploading(false);
+        }
+    };
     
 
     return (
@@ -117,11 +117,17 @@ const ImageGenerator = () => {
                 </form> 
 
                 {/*generated image*/}
+                <div className="generated-image">
                 <div className="image-container">
                     <div className="image">
-                        <img src={generatedImage} alt="Generated image will appear here" />                 
-                    </div>
-                    
+                        <img src={generatedImage} alt="Generated image will appear here" />                
+                    </div>  
+                </div>
+                {( generatedImage && !uploading) && 
+                <button onClick={handlePost} className="post-button" disabled={uploading}>
+                    {uploading ? "Posting..." : "Post"}
+                </button> 
+}
                 </div>
             </div>
         </div>

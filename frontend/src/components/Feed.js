@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import axios from 'axios';
-
+import { fetchAllImagesFromFirestore } from '../firebase/FirebaseStorage';
 const Feed = () => {
     const [images, setImages] = useState([]);
 
     useEffect(() => {
         const fetchImages = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/api/images');
-                setImages(response.data);
-            } catch (error) {
-                console.error("Error fetching images:", error);
-            }
+            const fetchedImages = await fetchAllImagesFromFirestore();
+            setImages(fetchedImages);
         };
-
         fetchImages();
     }, []);
 
@@ -26,11 +20,9 @@ const Feed = () => {
                 <div className="feed-grid">
                     {images.map((image) => (
                         <div key={image.id} className="feed-item">
-                            <img
-                                src={image.image_url} // Use the URL directly
-                                alt={image.prompt}
-                            />
+                            <img src={image.imageUrl} alt={image.prompt} />
                             <p>{image.prompt}</p>
+                            <small>By: @{image.username}</small>
                         </div>
                     ))}
                 </div>
