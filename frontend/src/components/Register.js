@@ -39,7 +39,7 @@ const Register = () => {
                     <h3 className="title">Create a new account</h3>
                     <form onSubmit={onSubmit}>
                         <div className="input-group">
-                            <label className="input-label">Username</label>  {/* ✅ Add username input */}
+                            <label className="input-label">Username</label>  
                             <input
                                 type="text"
                                 required
