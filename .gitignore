@@ -20,7 +20,7 @@
 .env
 /backend/serviceAccountKey.json
 
-/backend/uploads
+__pycache__/
 /frontend/node_modules
 
 npm-debug.log*
