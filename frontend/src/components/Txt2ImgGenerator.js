@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
 import Navbar from './Navbar';
 import '../App.css';
-import axios from 'axios';
-import { uploadImageToFirebase } from '../firebase/FirebaseStorage';
-
+import { generateText2Img, uploadImageToBackend } from '../firebase/FirebaseStorage';
 const Text2ImgGenerator = () => {
 
     const [payload, setPayload] = useState({ 
@@ -42,7 +40,7 @@ const Text2ImgGenerator = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post(`${API_URL}/api/text2img`, {
+            const response = await generateText2Img( {
                 prompt: payload.prompt,
                 aspect_ratio: payload.aspectRatio,
                 seed: parseInt(payload.seed),
@@ -92,7 +90,7 @@ const Text2ImgGenerator = () => {
         setUploading(true);
 
         try {
-            await uploadImageToFirebase(imageBlob, payload.prompt);
+            await uploadImageToBackend(imageBlob, payload.prompt);
             alert("Image posted successfully!");
         } catch (error) {
             alert("Failed to post image.");

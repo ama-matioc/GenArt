@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/FirebaseHandler';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import Navbar from './Navbar'
-import { fetchUserImagesFromFirestore } from '../firebase/FirebaseStorage';
+import { fetchUserImages } from '../firebase/FirebaseStorage';
 
 const db=getFirestore();
 
@@ -26,15 +26,14 @@ const Profile = () => {
       }
     };
 
-    const fetchUserImages = async () => {
-      if (userId) {
-          const fetchedImages = await fetchUserImagesFromFirestore(userId);
+    const fetchUserImagesList = async () => {
+          const response = await fetchUserImages();
+          const fetchedImages = response.data;
           setImages(fetchedImages);
-      }
     };
 
     fetchUsername();
-    fetchUserImages();
+    fetchUserImagesList();
   }, [userId]);
 
   return (

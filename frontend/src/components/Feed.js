@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { fetchAllImagesFromFirestore } from '../firebase/FirebaseStorage';
+import { fetchAllImages } from '../firebase/FirebaseStorage';
 const Feed = () => {
     const [images, setImages] = useState([]);
 
     useEffect(() => {
         const fetchImages = async () => {
-            const fetchedImages = await fetchAllImagesFromFirestore();
+            const response = await fetchAllImages();    
+            const fetchedImages = response.data;
             setImages(fetchedImages);
         };
         fetchImages();

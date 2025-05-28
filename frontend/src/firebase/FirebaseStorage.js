@@ -1,65 +1,39 @@
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from 'firebase/firestore';
-import { auth } from './FirebaseHandler';
+import axios from 'axios';
+import { auth } from '../firebase/FirebaseHandler';
 
-const storage = getStorage();
-const db = getFirestore();
+const API = axios.create({ baseURL: 'http://localhost:5000' });
 
-export const uploadImageToFirebase = async (imageBlob, prompt) => {
-    try {
-        const user = auth.currentUser;
-        if (!user) throw new Error("User not authenticated");
+// Attach the Firebase ID token automatically
+API.interceptors.request.use(async (cfg) => {
+  const user = auth.currentUser;
+  if (user) {
+    const token = await user.getIdToken();
+    cfg.headers.Authorization = `Bearer ${token}`;
+  }
+  return cfg;
+});
 
-        const imageRef = ref(storage, `generated_images/${user.uid}/${Date.now()}.png`);
+export function generateImg2Img(formData) {
+  return API.post('/api/img2img', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+}
 
-        await uploadBytes(imageRef, imageBlob);
-        const imageUrl = await getDownloadURL(imageRef);
+export function generateText2Img(payload) {
+  return API.post('/api/text2img', payload);
+}
 
-        await addDoc(collection(db, "images"), {
-            userId: user.uid,
-            username: user.displayName || "Anonymous",
-            imageUrl,
-            prompt,
-            timestamp: new Date(),
-        });
+export function uploadImageToBackend(imageBlob, prompt) {
+  const fd = new FormData();
+  fd.append('image', imageBlob);
+  fd.append('prompt', prompt);
+  return API.post('/api/upload-image', fd);
+}
 
-        return imageUrl;
-    } catch (error) {
-        console.error("Error uploading image:", error);
-        throw error;
-    }
-};
+export function fetchAllImages() {
+  return API.get('/api/images');
+}
 
-export const fetchAllImagesFromFirestore = async () => {
-    try {
-        const q = query(collection(db, "images"), orderBy("timestamp", "desc"));
-        const querySnapshot = await getDocs(q);
-        
-        return querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
-    } catch (error) {
-        console.error("Error fetching images:", error);
-        return [];
-    }
-};
-
-export const fetchUserImagesFromFirestore = async (userId) => {
-    try {
-        const q = query(
-            collection(db, "images"),
-            where("userId", "==", userId), 
-            orderBy("timestamp", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        
-        return querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
-    } catch (error) {
-        console.error("Error fetching user images:", error);
-        return [];
-    }
-};
+export function fetchUserImages() {
+  return API.get('/api/images/user');
+}

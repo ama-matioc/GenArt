@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Navbar from './Navbar';
 import '../App.css';
 import axios from 'axios';
-import { uploadImageToFirebase } from '../firebase/FirebaseStorage';
+import { generateImg2Img, uploadImageToBackend } from '../firebase/FirebaseStorage';
 
 const Img2ImgGenerator = () => {
     const [payload, setPayload] = useState({
@@ -18,9 +18,6 @@ const Img2ImgGenerator = () => {
     const [loading, setLoading] = useState(false);
     const [imageBlob, setImageBlob] = useState(null);
     const [uploading, setUploading] = useState(false);
-
-    // Make sure this points to your Flask backend server
-    const API_URL = 'http://localhost:5000';
 
     // Input change handler
     const handleChange = (e) => {
@@ -60,11 +57,7 @@ const Img2ImgGenerator = () => {
             formData.append("guidance_scale", payload.guidance_scale);
             formData.append("steps", payload.steps);
 
-            const response = await axios.post(`${API_URL}/api/img2img`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            const response = await generateImg2Img(formData);
 
             if (response.status === 200 && response.data.data) {
                 // Convert base64 to blob
@@ -111,7 +104,7 @@ const Img2ImgGenerator = () => {
         setUploading(true);
 
         try {
-            await uploadImageToFirebase(imageBlob, payload.prompt);
+            await uploadImageToBackend(imageBlob, payload.prompt);
             alert("Image posted successfully!");
         } catch (error) {
             alert("Failed to post image.");

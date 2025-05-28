@@ -18,10 +18,10 @@
 .env.test.local
 .env.production.localgit
 .env
+/backend/serviceAccountKey.json
 
 /backend/uploads
 /frontend/node_modules
-.licenta-1b7b4-firebase-adminsdk-fbsvc-7767f4bb1b.json
 
 npm-debug.log*
 yarn-debug.log*
