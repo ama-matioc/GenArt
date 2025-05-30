@@ -113,6 +113,16 @@ const Img2ImgGenerator = () => {
         }
     };
 
+    const handleDownload = () => {
+        if (!imageBlob) return;
+        const link= document.createElement('a');
+        link.href = URL.createObjectURL(imageBlob);
+        link.download = `generated_image.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     return (
         <div>
             <Navbar />
@@ -237,14 +247,23 @@ const Img2ImgGenerator = () => {
                             )}
                         </div>
                     </div>
-                    {generatedImage && !uploading && (
-                        <button
-                            onClick={handlePost}
-                            className="post-button"
-                            disabled={uploading}
-                        >
-                            {uploading ? "Posting..." : "Post"}
-                        </button>
+                    {(generatedImage && !uploading) && (
+                        <div className='button-group'>
+                            <button 
+                                onClick={handlePost} 
+                                className="post-button" 
+                                disabled={uploading}
+                            >
+                                {uploading ? "Posting..." : "Post"}
+                            </button>
+
+                            <button
+                                onClick={handleDownload} 
+                                className="download-button"
+                                disabled={!generatedImage}
+                            > Download 
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>

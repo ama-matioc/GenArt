@@ -36,7 +36,7 @@ const Login = () => {
 
     return (
         <div>
-            {userLoggedIn && <Navigate to="/generate" replace={true} />}
+            {userLoggedIn && <Navigate to="/" replace={true} />}
 
             <div className="auth-container">
 

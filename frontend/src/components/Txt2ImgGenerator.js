@@ -18,9 +18,6 @@ const Text2ImgGenerator = () => {
     const [imageBlob, setImageBlob] = useState(null);
     const [uploading, setUploading] = useState(false);
 
-    // Make sure this points to your Flask backend server
-    const API_URL = 'http://localhost:5000';
-
     // Input change handler
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -98,6 +95,16 @@ const Text2ImgGenerator = () => {
             setUploading(false);
         }
     };
+
+    const handleDownload = () => {
+        if (!imageBlob) return;
+        const link= document.createElement('a');
+        link.href = URL.createObjectURL(imageBlob);
+        link.download = `generated_image.${payload.format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
     
     return (
         <div>
@@ -222,15 +229,24 @@ const Text2ImgGenerator = () => {
                             )}
                         </div>  
                     </div>
-                    {(generatedImage && !uploading) && 
-                        <button 
-                            onClick={handlePost} 
-                            className="post-button" 
-                            disabled={uploading}
-                        >
-                            {uploading ? "Posting..." : "Post"}
-                        </button>
-                    }
+                    {(generatedImage && !uploading) && (
+                        <div className='button-group'>
+                            <button 
+                                onClick={handlePost} 
+                                className="post-button" 
+                                disabled={uploading}
+                            >
+                                {uploading ? "Posting..." : "Post"}
+                            </button>
+
+                            <button
+                                onClick={handleDownload} 
+                                className="download-button"
+                                disabled={!generatedImage}
+                            > Download 
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
