@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from img2img import generate_image2image
@@ -11,11 +12,23 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
-  "storageBucket": "licenta-1b7b4.firebasestorage.app"
+  "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET")
 })
 
 bucket = admin_storage.bucket()
 db = admin_fs.client()
+
+def get_username_from_firestore(uid):
+    """Helper function to get username from Firestore"""
+    try:
+        user_doc = db.collection("users").document(uid).get()
+        if user_doc.exists:
+            return user_doc.to_dict().get("username", "Anonymous")
+        else:
+            return "Anonymous"
+    except Exception as e:
+        print(f"Error fetching username from Firestore: {e}")
+        return "Anonymous"
 
 @app.route("/api/upload-image", methods=["POST"])
 def upload_image():
@@ -23,7 +36,9 @@ def upload_image():
     id_token = request.headers.get("Authorization", "").split("Bearer ")[-1]
     decoded = admin_auth.verify_id_token(id_token)
     uid = decoded["uid"]
-    username = decoded.get("name", "Anonymous")
+    
+    # Get username from Firestore instead of token
+    username = get_username_from_firestore(uid)
 
     # 2 Get file & prompt
     file = request.files.get("image")

@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import GenerateImage from './components/GeneratePage';
 import Homepage from './components/Homepage';
-import Feed from './components/Feed';
+import Gallery from './components/Gallery';
 import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/generate" element={<GenerateImage />} />
-        <Route path="/feed" element={<Feed />} />
+        <Route path="/gallery" element={<Gallery />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/myprofile" element={<Profile />} />

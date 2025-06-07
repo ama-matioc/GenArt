@@ -47,7 +47,7 @@ function Navbar() {
                 <Link to="/img2img">Image to Image</Link>
             </div>
             </div>
-            <a href="/feed">Feed</a>
+            <a href="/gallery">Gallery</a>
             {userLoggedIn ? (
                 <>
                     <a href="/myprofile">My Profile</a>

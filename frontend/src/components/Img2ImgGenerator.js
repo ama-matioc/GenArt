@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from './Navbar';
 import '../App.css';
-import axios from 'axios';
 import { generateImg2Img, uploadImageToBackend } from '../firebase/FirebaseStorage';
 
 const Img2ImgGenerator = () => {
@@ -18,6 +17,7 @@ const Img2ImgGenerator = () => {
     const [loading, setLoading] = useState(false);
     const [imageBlob, setImageBlob] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [isDragOver, setIsDragOver] = useState(false);
 
     // Input change handler
     const handleChange = (e) => {
@@ -28,15 +28,54 @@ const Img2ImgGenerator = () => {
         }));
     };
 
+    // File processing function
+    const processFile = (file) => {
+        if (file && file.type.startsWith('image/')) {
+            setInputImageFile(file);
+            const imageUrl = URL.createObjectURL(file);
+            setInputImage(imageUrl);
+        } else {
+            alert("Please select a valid image file");
+        }
+    };
+
     // File input handler
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setInputImageFile(file);
-            const imageUrl = URL.createObjectURL(file);
-            setInputImage(imageUrl);
+            processFile(file);
         }
     };
+
+    // Drag and drop handlers
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(false);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(false);
+
+        const files = e.dataTransfer.files;
+        if (files && files[0]) {
+            processFile(files[0]);
+        }
+    };
+
 
     // Form submit handler
     const handleSubmit = async (e) => {
@@ -129,21 +168,44 @@ const Img2ImgGenerator = () => {
             <h1>Image to Image Generator</h1>
             <div className="container">                
                 <form onSubmit={handleSubmit}>
-                    {/* Image upload */}
+                    {/* Drag and Drop Image upload */}
                     <div className="image-upload-container">
                         <label htmlFor="image-upload" className="form-label">Upload Image</label>
+                        
+                        <div 
+                            className={`drag-drop-zone ${isDragOver ? 'drag-over' : ''} ${inputImage ? 'has-image' : ''}`}
+                            onDragEnter={handleDragEnter}
+                            onDragLeave={handleDragLeave}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            onClick={() => document.getElementById('image-upload').click()}
+                        >
+                            {inputImage ? (
+                                <div className="preview-container">
+                                    <img src={inputImage} alt="Preview" className="image-preview" />
+                                    <div className="image-overlay">
+                                        <p>Click or drag to change image</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="drop-zone-content">
+                                    <div className="upload-icon">📁</div>
+                                    <p className="drop-text">
+                                        {isDragOver ? 'Drop your image here' : 'Drag & drop an image here'}
+                                    </p>
+                                    <p className="or-text">or</p>
+                                    <span className="browse-text">Click to browse</span>
+                                </div>
+                            )}
+                        </div>
+                        
                         <input
                             type="file"
                             id="image-upload"
                             accept="image/*"
                             onChange={handleImageUpload}
-                            className="file-input"
+                            className="file-input-hidden"
                         />
-                        {inputImage && (
-                            <div className="preview-container">
-                                <img src={inputImage} alt="Preview" className="image-preview" />
-                            </div>
-                        )}
                     </div>
 
                     {/* Prompt input */}
@@ -243,7 +305,7 @@ const Img2ImgGenerator = () => {
                             {generatedImage ? (
                                 <img src={generatedImage} alt="Transformed image" />
                             ) : (
-                                <div className="placeholder">Transformed image will appear here</div>
+                                <div className="placeholder">Generated image will appear here</div>
                             )}
                         </div>
                     </div>
