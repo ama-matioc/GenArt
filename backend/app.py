@@ -6,6 +6,9 @@ from txt2img import generate_text2image
 import firebase_admin
 from firebase_admin import credentials, auth as admin_auth, storage as admin_storage, firestore as admin_fs
 import time
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -78,6 +81,24 @@ def list_user_images():
              .stream()
     return jsonify([ {**doc.to_dict(), "id": doc.id} for doc in docs ])
 
+@app.route('/api/user/profile', methods=['GET'])
+def get_user_profile():
+    id_token = request.headers.get("Authorization", "").split("Bearer ")[-1]
+    uid = admin_auth.verify_id_token(id_token)["uid"]
+    
+    user_doc = db.collection("users").document(uid).get()
+    if user_doc.exists:
+        user_data = user_doc.to_dict()
+
+        created_at = user_data.get("created_at")
+        join_date = created_at.isoformat() if hasattr(created_at, 'isoformat') else str(created_at)
+        return jsonify({
+            "username": user_data.get("username", "Anonymous"),
+            "join_date": join_date
+        })
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
 
 @app.route('/api/img2img', methods=['POST'])
 def img2img():

@@ -37,3 +37,7 @@ export function fetchAllImages() {
 export function fetchUserImages() {
   return API.get('/api/images/user');
 }
+
+export function fetchUserProfile() {
+  return API.get('/api/user/profile');
+}

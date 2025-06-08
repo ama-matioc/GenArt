@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/FirebaseHandler';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import Navbar from './Navbar'
-import { fetchUserImages } from '../firebase/FirebaseStorage';
+import { fetchUserImages, fetchUserProfile } from '../firebase/FirebaseStorage';
 
-const db = getFirestore();
 
 const Profile = () => {
   const [username, setUsername] = useState('');
@@ -18,36 +16,16 @@ const Profile = () => {
   const userId = auth.currentUser?.uid;
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      const user = auth.currentUser;
-      if (user) {
-        try {
-          const userRef = doc(db, 'users', user.uid);
-          const userSnap = await getDoc(userRef);
-          if (userSnap.exists()) {
-            const userData = userSnap.data();
-            setUsername(userData.username);
-            // Set join date from user creation time
-            const joinDate = user.metadata.creationTime 
-              ? new Date(user.metadata.creationTime).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long' 
-                })
-              : 'Recently';
-            setUserStats(prev => ({
-              ...prev,
-              joinDate
-            }));
-          } else {
-            setUsername('User');
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          setUsername('User');
-        }
-      }
-    };
+  const fetchUserData = async () => {
+    try {
+      const res = await fetchUserProfile();
+      const { username, joinDate } = res.data;
+      setUsername(username);
+      setUserStats(prev => ({ ...prev, joinDate }));
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+  };
 
     const fetchUserImagesList = async () => {
       try {
