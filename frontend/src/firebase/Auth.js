@@ -40,11 +40,9 @@ export const doSignInWithGoogle = async () => {
     
     const user = result.user;
     
-    // Check if user document exists in Firestore
     const userDocRef = doc(db, "users", user.uid);
     const userDoc = await getDoc(userDocRef);
     
-    // If user document doesn't exist, create it with Google account info
     if (!userDoc.exists()) {
         await setDoc(userDocRef, {
             username: user.displayName || "Google User",
@@ -53,7 +51,6 @@ export const doSignInWithGoogle = async () => {
         });
         console.log("Google user document created in Firestore!");
     } else {
-        // Optionally update existing user's username to match current Google displayName
         const existingData = userDoc.data();
         if (existingData.username !== user.displayName) {
             await setDoc(userDocRef, {

@@ -21,8 +21,8 @@ firebase_admin.initialize_app(cred, {
 bucket = admin_storage.bucket()
 db = admin_fs.client()
 
+# helper function to get username from Firestore
 def get_username_from_firestore(uid):
-    """Helper function to get username from Firestore"""
     try:
         user_doc = db.collection("users").document(uid).get()
         if user_doc.exists:
@@ -33,29 +33,25 @@ def get_username_from_firestore(uid):
         print(f"Error fetching username from Firestore: {e}")
         return "Anonymous"
 
+# upload image to Firestore route
 @app.route("/api/upload-image", methods=["POST"])
 def upload_image():
-    # 1 Extract and verify Firebase ID token from Authorization header
     id_token = request.headers.get("Authorization", "").split("Bearer ")[-1]
     decoded = admin_auth.verify_id_token(id_token)
     uid = decoded["uid"]
     
-    # Get username from Firestore instead of token
     username = get_username_from_firestore(uid)
 
-    # 2 Get file & prompt
     file = request.files.get("image")
     prompt = request.form.get("prompt")
     if not file or not prompt:
         return jsonify({"error":"Missing image or prompt"}), 400
 
-    # 3 Upload to Storage
     blob = bucket.blob(f"generated_images/{uid}/{int(time.time())}.png")
     blob.upload_from_string(file.read(), content_type=file.content_type)
-    blob.make_public()  # or generate_signed_url
+    blob.make_public()  
     image_url = blob.public_url
 
-    # 4 Save metadata in Firestore
     db.collection("images").add({
       "userId": uid,
       "username": username,
@@ -66,11 +62,13 @@ def upload_image():
 
     return jsonify({"imageUrl": image_url})
 
+# get public image gallery route
 @app.route("/api/images", methods=["GET"])
 def list_images():
     docs = db.collection("images").order_by("timestamp", direction=admin_fs.Query.DESCENDING).stream()
     return jsonify([ {**doc.to_dict(), "id": doc.id} for doc in docs ])
 
+# get user's images route
 @app.route("/api/images/user", methods=["GET"])
 def list_user_images():
     id_token = request.headers.get("Authorization","").split("Bearer ")[-1]
@@ -81,6 +79,7 @@ def list_user_images():
              .stream()
     return jsonify([ {**doc.to_dict(), "id": doc.id} for doc in docs ])
 
+# get user profile route
 @app.route('/api/user/profile', methods=['GET'])
 def get_user_profile():
     id_token = request.headers.get("Authorization", "").split("Bearer ")[-1]
@@ -99,7 +98,7 @@ def get_user_profile():
     else:
         return jsonify({"error": "User not found"}), 404
     
-
+# image-to-image transformation route
 @app.route('/api/img2img', methods=['POST'])
 def img2img():
     file = request.files.get("image")
@@ -121,6 +120,7 @@ def img2img():
     )
     return jsonify({"data": b64})
 
+# text-to-image generation route
 @app.route('/api/text2img', methods=['POST'])
 def text2img():
     data = request.json

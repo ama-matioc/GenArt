@@ -16,17 +16,19 @@ const Profile = () => {
   const userId = auth.currentUser?.uid;
 
   useEffect(() => {
-  const fetchUserData = async () => {
-    try {
-      const res = await fetchUserProfile();
-      const { username, joinDate } = res.data;
-      setUsername(username);
-      setUserStats(prev => ({ ...prev, joinDate }));
-    } catch (err) {
-      console.error("Error fetching profile:", err);
-    }
-  };
 
+    // Fetch user's profile info
+    const fetchUserData = async () => {
+      try {
+        const res = await fetchUserProfile();
+        const { username, joinDate } = res.data;
+        setUsername(username);
+        setUserStats(prev => ({ ...prev, joinDate }));
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
+    };
+    // fetch user's generated images
     const fetchUserImagesList = async () => {
       try {
         const response = await fetchUserImages();
@@ -48,6 +50,7 @@ const Profile = () => {
     fetchUserImagesList();
   }, [userId]);
 
+  // modal handlers
   const openImageModal = (image) => {
     setSelectedImage(image);
   };
@@ -60,7 +63,7 @@ const Profile = () => {
     <div>
       <Navbar />
       <div className="profile-page">
-        {/* Profile Header */}
+        {/* profile info */}
         <div className="profile-header">
           <div className="profile-header-content">
             <div className="profile-avatar">
@@ -75,17 +78,18 @@ const Profile = () => {
                   <span className="stat-number">{userStats.totalImages}</span>
                   <span className="stat-label">Creations</span>
                 </div>
+                {/*
                 <div className="stat-divider"></div>
                 <div className="stat-item">
                   <span className="stat-number">Member</span>
                   <span className="stat-label">Since {userStats.joinDate}</span>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Images Gallery */}
+        {/* user's image gallery */}
         <div className="profile-container">
           <div className="profile-section-header">
             <h1>Your AI Art Gallery</h1>
@@ -124,7 +128,7 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Image Modal */}
+        {/* selected image modal */}
         {selectedImage && (
           <div className="modal-backdrop" onClick={closeImageModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>

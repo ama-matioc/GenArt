@@ -19,7 +19,7 @@ const Img2ImgGenerator = () => {
     const [uploading, setUploading] = useState(false);
     const [isDragOver, setIsDragOver] = useState(false);
 
-    // Input change handler
+    // update values when input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setPayload((prevPayload) => ({
@@ -28,7 +28,7 @@ const Img2ImgGenerator = () => {
         }));
     };
 
-    // File processing function
+    // validate and process the uploaded file
     const processFile = (file) => {
         if (file && file.type.startsWith('image/')) {
             setInputImageFile(file);
@@ -39,7 +39,7 @@ const Img2ImgGenerator = () => {
         }
     };
 
-    // File input handler
+    // file input handler
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -47,7 +47,7 @@ const Img2ImgGenerator = () => {
         }
     };
 
-    // Drag and drop handlers
+    // drag & drop handlers
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -77,7 +77,7 @@ const Img2ImgGenerator = () => {
     };
 
 
-    // Form submit handler
+    // form submit handler
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -99,7 +99,6 @@ const Img2ImgGenerator = () => {
             const response = await generateImg2Img(formData);
 
             if (response.status === 200 && response.data.data) {
-                // Convert base64 to blob
                 const byteString = atob(response.data.data);
                 const ab = new ArrayBuffer(byteString.length);
                 const ia = new Uint8Array(ab);
@@ -117,17 +116,13 @@ const Img2ImgGenerator = () => {
             let errorMessage = "Error generating image. ";
             
             if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
                 console.error("Response data:", error.response.data);
                 console.error("Response status:", error.response.status);
                 errorMessage += `Server responded with status ${error.response.status}`;
             } else if (error.request) {
-                // The request was made but no response was received
                 console.error("No response received:", error.request);
                 errorMessage += "No response from server. Check if the backend is running.";
             } else {
-                // Something happened in setting up the request that triggered an Error
                 console.error("Error message:", error.message);
                 errorMessage += error.message;
             }
@@ -168,7 +163,8 @@ const Img2ImgGenerator = () => {
             <h1>Image to Image Generator</h1>
             <div className="container">                
                 <form onSubmit={handleSubmit}>
-                    {/* Drag and Drop Image upload */}
+
+                    {/* drag & drop section */}
                     <div className="image-upload-container">
                         <label htmlFor="image-upload" className="form-label">Upload Image</label>
                         
@@ -208,7 +204,7 @@ const Img2ImgGenerator = () => {
                         />
                     </div>
 
-                    {/* Prompt input */}
+                    {/* prompt input */}
                     <div className="prompt-container">
                         <label htmlFor="prompt" className="form-label">Transformation Prompt</label>
                         <textarea
@@ -222,7 +218,7 @@ const Img2ImgGenerator = () => {
                         />
                     </div>
 
-                    {/* Strength slider */}
+                    {/*strength */}
                     <div className="slider-container">
                         <label htmlFor="strength" className="form-label">
                             Transformation Strength: {payload.strength}
@@ -244,7 +240,7 @@ const Img2ImgGenerator = () => {
                         </div>
                     </div>
 
-                    {/* Guidance scale slider */}
+                    {/* prompt guidance */}
                     <div className="slider-container">
                         <label htmlFor="guidance_scale" className="form-label">
                             Prompt Guidance: {payload.guidance_scale}
@@ -266,7 +262,7 @@ const Img2ImgGenerator = () => {
                         </div>
                     </div>
 
-                    {/* Steps slider */}
+                    {/* quality/steps */}
                     <div className="slider-container">
                         <label htmlFor="steps" className="form-label">
                             Quality (Steps): {payload.steps}
@@ -288,7 +284,7 @@ const Img2ImgGenerator = () => {
                         </div>
                     </div>
 
-                    {/* Submit button */}
+                    {/* submit button */}
                     <button
                         type="submit"
                         className="generate-button"
@@ -298,7 +294,7 @@ const Img2ImgGenerator = () => {
                     </button>
                 </form>
 
-                {/* Generated image */}
+                {/* generated image */}
                 <div className="generated-image">
                     <div className="image-container">
                         <div className="image">
@@ -332,5 +328,4 @@ const Img2ImgGenerator = () => {
         </div>
     );
 };
-
 export default Img2ImgGenerator;

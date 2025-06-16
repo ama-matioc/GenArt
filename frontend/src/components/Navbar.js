@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { doSignOut } from '../firebase/Auth';
@@ -16,17 +16,13 @@ function Navbar() {
         navigate('/login');
     };
     
-    const toggleDropdown = () => {
-        setShowDropdown(!showDropdown);
-    }
-    
     const closeDropdown = (e) => {
         if (showDropdown && !e.target.closest('.dropdown')) {
             setShowDropdown(false);
         }
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.addEventListener('click', closeDropdown);
         return () => {
             document.removeEventListener('click', closeDropdown);
@@ -36,18 +32,23 @@ function Navbar() {
     return (
     <header className='navbar'>
         <h2>GenArt</h2>
+        
         <nav ref={navRef}>
             <a href="/">Home</a>
             <div className="dropdown">
             <Link to="/generate" className="dropdown-toggle">
-                Generate Image
+                Generate
             </Link>
+
+            {/* dropdown menu for generation options */}
             <div className="dropdown-menu">
                 <Link to="/txt2img">Text to Image</Link>
                 <Link to="/img2img">Image to Image</Link>
             </div>
             </div>
             <a href="/gallery">Gallery</a>
+
+            {/* conditional navigation based on authentication state */}
             {userLoggedIn ? (
                 <>
                     <a href="/myprofile">My Profile</a>

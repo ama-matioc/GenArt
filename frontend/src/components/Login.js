@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { doSignInWithEmailAndPassword, doSignInWithGoogle } from '../firebase/Auth';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,6 +13,7 @@ const Login = () => {
     const [isSigningIn, setIsSigningIn] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+    // handle email+password login
     const onSubmit = async (e) => {
         e.preventDefault();
         if (!isSigningIn) {
@@ -26,6 +27,7 @@ const Login = () => {
         }
     };
 
+    //handle Google login
     const onGoogleSignIn = (e) => {
         e.preventDefault();
         if (!isSigningIn) {
@@ -48,6 +50,7 @@ const Login = () => {
                 <div className="auth-box">
                     <h3 className="title">Login to your account</h3>
                     <form onSubmit={onSubmit}>
+                        {/* email input */}
                         <div className="input-group">
                             <label className="input-label">Email</label>
                             <input
@@ -60,6 +63,7 @@ const Login = () => {
                             />
                         </div>
 
+                        {/* password input */}
                         <div className="input-group">
                             <label className="input-label">Password</label>
                             <input
@@ -74,6 +78,7 @@ const Login = () => {
 
                         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
+                        {/* submit button */}
                         <button
                             type="submit"
                             disabled={isSigningIn}
@@ -83,6 +88,7 @@ const Login = () => {
                         </button>
                     </form>
 
+                    {/* registration link */}
                     <p className="footer-text">
                         Don't have an account?{' '}
                         <Link to="/register" className="footer-text">
@@ -94,6 +100,7 @@ const Login = () => {
                         <span className="divider-text">OR</span>
                     </div>
 
+                    {/* Google login button */}
                     <button
                         disabled={isSigningIn}
                         onClick={onGoogleSignIn}

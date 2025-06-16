@@ -3,7 +3,6 @@ import { auth } from '../firebase/FirebaseHandler';
 
 const API = axios.create({ baseURL: 'http://localhost:5000' });
 
-// Attach the Firebase ID token automatically
 API.interceptors.request.use(async (cfg) => {
   const user = auth.currentUser;
   if (user) {

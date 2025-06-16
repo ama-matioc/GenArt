@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Navigate, Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Navigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { doCreateUserWithEmailAndPassword } from '../firebase/Auth'
 import galaxy from '../assets/galaxy.jpg'
@@ -25,9 +25,8 @@ const Register = () => {
 
     return (
         <div>
+            {/* redirect if already logged in */}
             {userLoggedIn && (<Navigate to={'/'} replace={true} />)}
-
-
                 <div className="auth-container">
                     
                         <div className="auth-image">
@@ -38,6 +37,8 @@ const Register = () => {
                 <div className="auth-box">
                     <h3 className="title">Create a new account</h3>
                     <form onSubmit={onSubmit}>
+
+                       {/* username field */}          
                         <div className="input-group">
                             <label className="input-label">Username</label>  
                             <input
@@ -47,6 +48,8 @@ const Register = () => {
                                 className="input-field"
                             />
                         </div>
+
+                        {/* email field */}
                         <div className="input-group">
                             <label className="input-label">Email</label>
                             <input
@@ -58,6 +61,7 @@ const Register = () => {
                             />
                         </div>
 
+                        {/* password field */}
                         <div className="input-group">
                             <label className="input-label">Password</label>
                             <input
@@ -70,6 +74,7 @@ const Register = () => {
                             />
                         </div>
 
+                        {/* confirm password field */}
                         <div className='input-group'>
                             <label className="input-label">Confirm Password</label>
                             <input

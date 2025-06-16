@@ -18,13 +18,10 @@ def generate_image2image(
     num_steps: int = 25,
     ) -> str:
     
-    """
-    Returns a base64-encoded PNG.
-    """
-    # Load and preprocess
+    # load and preprocess the input image
     img = Image.open(BytesIO(input_image_bytes)).convert("RGB").resize((512, 512))
 
-    # Run pipeline
+    # run img2img pipeline
     out_img = pipe(
         prompt=prompt,
         image=img,
@@ -33,7 +30,7 @@ def generate_image2image(
         num_inference_steps=num_steps
     ).images[0]
 
-    # Encode to base64 for transport
+    # encode to base64 for transport
     buffered = BytesIO()
     out_img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")

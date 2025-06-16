@@ -1,7 +1,9 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import '../App.css';
+import city from '../assets/city.png';
+import cat from '../assets/cat.jpeg';
+import landscape from '../assets/landscape.png';
 
 const Homepage = () => {
   return (
@@ -9,7 +11,7 @@ const Homepage = () => {
       <Navbar />
       
       <div className="homepage-container">
-        {/* Hero Section */}
+        {/*hero section */}
         <div className="hero-section">
           <div className="hero-content">
             <h1 className="hero-title">Transform Your Ideas into Art</h1>
@@ -46,7 +48,7 @@ const Homepage = () => {
           </div>
         </div>
 
-        {/*Feature Section */}
+        {/* feature section */}
         <div className="features-section">
           <h2 className="section-title">Powerful Creation Tools</h2>
           <div className="feature-grid">
@@ -82,7 +84,7 @@ const Homepage = () => {
           </div>
         </div>
 
-        {/*How It Works Section */}
+        {/*how it works section */}
         <div className="how-it-works-section">
           <h2 className="section-title">How It Works</h2>
           <div className="steps-container">
@@ -112,33 +114,27 @@ const Homepage = () => {
           </div>
         </div>
 
-        {/* Showcase Section */}
+        {/* showcase section */}
         <div className="showcase-section">
           <h2 className="section-title">Recent Creations</h2>
           <div className="showcase-grid">
             <div className="showcase-item">
-              <div className="showcase-placeholder">
-                <span className="placeholder-text">🌅 Landscape Art</span>
+              <div className="showcase-image">
+                <img src={landscape} alt="Mountain landscape at sunset" />
               </div>
-              <p className="showcase-prompt">"Serene mountain landscape at sunset"</p>
+              <p className="showcase-prompt">"cinematic mountain landscape"</p>
             </div>
             <div className="showcase-item">
-              <div className="showcase-placeholder">
-                <span className="placeholder-text">🎭 Portrait Art</span>
+              <div className="showcase-image">
+                <img src={cat} alt="Mountain landscape at sunset" />
               </div>
-              <p className="showcase-prompt">"Cyberpunk character design"</p>
+              <p className="showcase-prompt">"a cat in space"</p>
             </div>
             <div className="showcase-item">
-              <div className="showcase-placeholder">
-                <span className="placeholder-text">🏛️ Architecture</span>
+              <div className="showcase-image">
+                <img src={city} alt="Mountain landscape at sunset" />
               </div>
-              <p className="showcase-prompt">"Futuristic city architecture"</p>
-            </div>
-            <div className="showcase-item">
-              <div className="showcase-placeholder">
-                <span className="placeholder-text">🦋 Nature Art</span>
-              </div>
-              <p className="showcase-prompt">"Magical forest creatures"</p>
+              <p className="showcase-prompt">"birds in the sky"</p>
             </div>
           </div>
           <div className="showcase-cta">
@@ -146,7 +142,7 @@ const Homepage = () => {
           </div>
         </div>
 
-        {/* Footer */}
+        {/* footer */}
         <div className="cta-section">
           <h2>Ready to Create Something Amazing?</h2>
           <p>Join thousands of artists already using our AI-powered tools</p>

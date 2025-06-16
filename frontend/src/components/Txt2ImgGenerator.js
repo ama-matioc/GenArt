@@ -18,7 +18,7 @@ const Text2ImgGenerator = () => {
     const [imageBlob, setImageBlob] = useState(null);
     const [uploading, setUploading] = useState(false);
 
-    // Input change handler
+    // update values when input changes
     const handleChange = (e) => {
         const {name, value} = e.target;
         setPayload((prevPayload) => ({
@@ -27,7 +27,7 @@ const Text2ImgGenerator = () => {
         }));
     };
 
-    // Form submit handler
+    // form submit handler
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!payload.prompt) {
@@ -47,7 +47,6 @@ const Text2ImgGenerator = () => {
             });
 
             if (response.status === 200 && response.data.data) {
-                // Convert base64 to blob
                 const byteString = atob(response.data.data);
                 const ab = new ArrayBuffer(byteString.length);
                 const ia = new Uint8Array(ab);
@@ -178,21 +177,22 @@ const Text2ImgGenerator = () => {
                         />
                     </div>
 
-                    {/*seed
                     <div className="form-group">
-                        <label htmlFor="seed" className="form-label">Seed (for reproducibility)</label>
+                        <label htmlFor="seed" className="form-label"> Randomizer </label>
                         <input 
                             type="number" 
                             id="seed" 
                             name="seed" 
                             value={payload.seed} 
                             onChange={handleChange} 
+                            className="seed-input"
+                            placeholder="Change number for different results"
                             min="0" 
                             max="2147483647" 
                         />
                     </div>
-*/}
-                    {/*image format*/}
+
+                    {/* image format*/}
                     <div className="form-group">
                         <label htmlFor="format" className="form-label">Image Format</label>
                         <select 
